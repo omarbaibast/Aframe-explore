@@ -2,43 +2,78 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>WebAR Instant Exploration</title>
+    <title>Stereo WebAR Box Experience</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    
     <style>
-      /* Ensure the canvas fills the entire mobile screen safely */
       html, body {
         margin: 0;
         padding: 0;
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background-color: transparent;
+        background-color: #000;
+      }
+      /* This forces your live phone camera video stream to sit perfectly behind the 3D graphics */
+      #webcam-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -2;
+      }
+      /* Ensure the A-Frame canvas layer is transparent so the video shows through */
+      .a-canvas {
+        background-color: transparent !important;
       }
     </style>
   </head>
   <body>
 
-    <a-scene 
-      webxr="requiredFeatures: hit-test, local-floor; referenceSpaceType: local-floor;"
-      renderer="alpha: true; colorManagement: true;"
-      vr-mode-ui="enabled: false;"
-      ar-mode-ui="enabled: true;">
+    <video id="webcam-video" autoplay playsinline muted></video>
+
+    <a-scene renderer="alpha: true;" vr-mode-ui="enabled: true;" ar-mode-ui="enabled: false;">
       
-      <a-entity id="ar-content" position="0 0 -1.2">
-        <a-box position="-0.4 0.2 0" width="0.3" height="0.4" depth="0.3" color="#4CC3D9"></a-box>
+      <a-entity id="stereo-objects" position="0 0 -2">
+        <a-box position="-0.5 0.3 0" width="0.4" height="0.4" depth="0.4" color="#4CC3D9"></a-box>
         
-        <a-sphere position="0 0.6 -0.3" radius="0.25" color="#EF2D5E"></a-sphere>
+        <a-sphere position="0 0.8 -0.5" radius="0.3" color="#EF2D5E"></a-sphere>
         
-        <a-cylinder position="0.4 0.3 0" radius="0.12" height="0.6" color="#FFC65D"></a-cylinder>
+        <a-cylinder position="0.5 0.4 0" radius="0.15" height="0.6" color="#FFC65D"></a-cylinder>
       </a-entity>
 
-      <a-entity light="type: ambient; intensity: 0.7;"></a-entity>
-      <a-entity light="type: directional; intensity: 0.5;" position="1 4 2"></a-entity>
+      <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
+      <a-entity light="type: directional; intensity: 0.6;" position="1 4 2"></a-entity>
 
       <a-camera position="0 1.6 0" look-controls="enabled: true"></a-camera>
 
     </a-scene>
+
+    <script>
+      // Automatically request access to the phone's back camera on page load
+      navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: { exact: "environment" } 
+        }, 
+        audio: false 
+      })
+      .then(function(stream) {
+        var video = document.getElementById('webcam-video');
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(function(err) {
+        console.log("Back camera error, trying default camera: ", err);
+        // Fallback for devices or desktop testing browsers without an explicit environmental back camera
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        .then(function(stream) {
+          var video = document.getElementById('webcam-video');
+          video.srcObject = stream;
+          video.play();
+        });
+      });
+    </script>
 
   </body>
 </html>
