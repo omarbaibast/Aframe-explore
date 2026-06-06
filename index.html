@@ -2,28 +2,42 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>WebAR Experience</title>
-    <!-- Use A-Frame 1.5.0 -->
+    <title>WebAR Instant Exploration</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    
+    <style>
+      /* Ensure the canvas fills the entire mobile screen safely */
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: transparent;
+      }
+    </style>
   </head>
-  <body style="margin: 0; overflow: hidden;">
+  <body>
 
-    <!-- 
-      webxr="requiredFeatures: hit-test, local-floor;" 
-      This is the key to telling the browser you want AR.
-    -->
     <a-scene 
-      webxr="requiredFeatures: hit-test, local-floor;"
+      webxr="requiredFeatures: hit-test, local-floor; referenceSpaceType: local-floor;"
       renderer="alpha: true; colorManagement: true;"
-      vr-mode-ui="enabled: false;" 
+      vr-mode-ui="enabled: false;"
       ar-mode-ui="enabled: true;">
       
-      <!-- 3D Objects -->
-      <a-entity position="0 0 -1">
-        <a-box color="red" depth="0.2" height="0.2" width="0.2"></a-box>
+      <a-entity id="ar-content" position="0 0 -1.2">
+        <a-box position="-0.4 0.2 0" width="0.3" height="0.4" depth="0.3" color="#4CC3D9"></a-box>
+        
+        <a-sphere position="0 0.6 -0.3" radius="0.25" color="#EF2D5E"></a-sphere>
+        
+        <a-cylinder position="0.4 0.3 0" radius="0.12" height="0.6" color="#FFC65D"></a-cylinder>
       </a-entity>
 
-      <a-camera position="0 1.6 0"></a-camera>
+      <a-entity light="type: ambient; intensity: 0.7;"></a-entity>
+      <a-entity light="type: directional; intensity: 0.5;" position="1 4 2"></a-entity>
+
+      <a-camera position="0 1.6 0" look-controls="enabled: true"></a-camera>
+
     </a-scene>
 
   </body>
