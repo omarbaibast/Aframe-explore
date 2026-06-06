@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Stereo WebAR Box Experience</title>
+    <title>Forced Stereo WebAR</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <style>
       html, body {
@@ -13,7 +13,7 @@
         overflow: hidden;
         background-color: #000;
       }
-      /* This forces your live phone camera video stream to sit perfectly behind the 3D graphics */
+      /* Puts the camera feed at the very bottom layer */
       #webcam-video {
         position: absolute;
         top: 0;
@@ -23,23 +23,42 @@
         object-fit: cover;
         z-index: -2;
       }
-      /* Ensure the A-Frame canvas layer is transparent so the video shows through */
+      /* Ensures the A-frame layer is see-through */
       .a-canvas {
         background-color: transparent !important;
+      }
+      
+      /* OUR OWN CUSTOM LARGE BUTTON (Pushed to the bottom center so you can't miss it) */
+      #custom-vr-button {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        padding: 15px 35px;
+        background-color: #EF2D5E;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-family: sans-serif;
+        font-weight: bold;
+        font-size: 18px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+        cursor: pointer;
       }
     </style>
   </head>
   <body>
 
+    <button id="custom-vr-button" onclick="forceStereoMode()">ACTIVATE VR BOX SPLIT SCREEN</button>
+
     <video id="webcam-video" autoplay playsinline muted></video>
 
-    <a-scene renderer="alpha: true;" vr-mode-ui="enabled: true;" ar-mode-ui="enabled: false;">
+    <a-scene vr-mode-ui="enabled: false;" ar-mode-ui="enabled: false;">
       
       <a-entity id="stereo-objects" position="0 0 -2">
         <a-box position="-0.5 0.3 0" width="0.4" height="0.4" depth="0.4" color="#4CC3D9"></a-box>
-        
         <a-sphere position="0 0.8 -0.5" radius="0.3" color="#EF2D5E"></a-sphere>
-        
         <a-cylinder position="0.5 0.4 0" radius="0.15" height="0.6" color="#FFC65D"></a-cylinder>
       </a-entity>
 
@@ -51,11 +70,20 @@
     </a-scene>
 
     <script>
-      // Automatically request access to the phone's back camera on page load
+      // 1. Manually force the A-Frame canvas into Split-Screen Stereo Mode
+      function forceStereoMode() {
+        var scene = document.querySelector('a-scene');
+        if (scene.enterVR) {
+          scene.enterVR(); // This kicks it into split-screen mode manually
+          
+          // Hide our custom button after you click it so it doesn't block your eyes
+          document.getElementById('custom-vr-button').style.display = 'none';
+        }
+      }
+
+      // 2. Automatically request access to the phone's back camera pipeline
       navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: { exact: "environment" } 
-        }, 
+        video: { facingMode: { exact: "environment" } }, 
         audio: false 
       })
       .then(function(stream) {
@@ -64,8 +92,7 @@
         video.play();
       })
       .catch(function(err) {
-        console.log("Back camera error, trying default camera: ", err);
-        // Fallback for devices or desktop testing browsers without an explicit environmental back camera
+        // Fallback for laptops/desktop browsers that don't have an 'environment' camera
         navigator.mediaDevices.getUserMedia({ video: true, audio: false })
         .then(function(stream) {
           var video = document.getElementById('webcam-video');
