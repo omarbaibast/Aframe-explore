@@ -2,44 +2,28 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Instant WebAR Exploration</title>
-    <!-- Main A-Frame Library -->
+    <title>WebAR Experience</title>
+    <!-- Use A-Frame 1.5.0 -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   </head>
-  <body style="margin: 0; overflow: hidden; background-color: transparent;">
+  <body style="margin: 0; overflow: hidden;">
 
     <!-- 
-      1. Added renderer="alpha: true; colorManagement: true;" to make the 3D layer transparent.
-      2. Added background="transparent: true" to ensure no default color blocks the camera.
+      webxr="requiredFeatures: hit-test, local-floor;" 
+      This is the key to telling the browser you want AR.
     -->
     <a-scene 
-      renderer="alpha: true;"
-      background="transparent: true"
-      webxr="optionalFeatures: hit-test, local-floor; referenceSpaceType: local-floor;"
-      xr-mode-ui="enabled: true; enterAREnabled: true; enterVREnabled: false;">
+      webxr="requiredFeatures: hit-test, local-floor;"
+      renderer="alpha: true; colorManagement: true;"
+      vr-mode-ui="enabled: false;" 
+      ar-mode-ui="enabled: true;">
       
-      <!-- 
-        3D CONTENT GROUP
-        Placed 1.5 meters in front of the starting position (-1.5 on Z)
-      -->
-      <a-entity id="ar-objects" position="0 0 -1.5">
-        <!-- Cyan block -->
-        <a-box position="-0.5 0.25 0" width="0.4" height="0.5" depth="0.4" color="#4CC3D9"></a-box>
-        
-        <!-- Floating red sphere -->
-        <a-sphere position="0 0.8 -0.5" radius="0.3" color="#EF2D5E"></a-sphere>
-        
-        <!-- Yellow cylinder -->
-        <a-cylinder position="0.5 0.4 0" radius="0.15" height="0.8" color="#FFC65D"></a-cylinder>
+      <!-- 3D Objects -->
+      <a-entity position="0 0 -1">
+        <a-box color="red" depth="0.2" height="0.2" width="0.2"></a-box>
       </a-entity>
 
-      <!-- Simple lighting -->
-      <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
-      <a-entity light="type: directional; intensity: 0.6;" position="1 4 3"></a-entity>
-
-      <!-- Camera tracking -->
-      <a-camera position="0 1.6 0" look-controls="enabled: true"></a-camera>
-
+      <a-camera position="0 1.6 0"></a-camera>
     </a-scene>
 
   </body>
